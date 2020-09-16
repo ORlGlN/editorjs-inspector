@@ -43,13 +43,29 @@ class EditorJSInspector implements InlineTool {
     this.#dialog.style.display = 'block';
     this.#dialog.style.top = `${window.pageYOffset + rect.bottom + 32}px`;
     this.#dialog.style.left = `${window.pageXOffset + rect.left}px`;
-    this.#dialog.textContent = root.outerHTML;
+    this.#dialog.textContent = this.domTree({ node: root });
 
     return false;
   }
 
   clear() {
     this.#dialog.style.display = 'none';
+  }
+
+  // TODO: static
+  domTree({ node }: { node: Node }): string {
+    const item =
+      node instanceof Element
+        ? `${node.nodeName.toLowerCase()} ${Array.from(node.attributes)
+            .map((attribute) => `${attribute.name}="${attribute.value}"`)
+            .join(' ')}`
+        : node.textContent;
+
+    const childTexts = Array.from(node.childNodes).map((childNode) =>
+      this.domTree({ node: childNode })
+    );
+
+    return `${item} ${childTexts.join('\n')}`;
   }
 
   render() {
