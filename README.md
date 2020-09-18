@@ -23,6 +23,8 @@ Work in progress
 
 ### ✨ [Demo](https://hata6502.github.io/editorjs-inspector/)
 
+![Demo](https://user-images.githubusercontent.com/7702653/93619240-42303680-fa13-11ea-8150-74e3301e9e0a.gif)
+
 ## Install
 
 ### Install via yarn
