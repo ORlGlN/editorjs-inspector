@@ -3,6 +3,7 @@ import type {
   InlineTool,
   InlineToolConstructorOptions,
 } from '@editorjs/editorjs';
+import EditorJSInspectorError from './EditorJSInspectorError';
 
 class EditorJSInspector implements InlineTool {
   static get isInline() {
@@ -43,7 +44,7 @@ class EditorJSInspector implements InlineTool {
       const selection = window.getSelection();
 
       if (!selection) {
-        throw new Error();
+        throw new EditorJSInspectorError();
       }
 
       const range = new Range();
@@ -123,7 +124,7 @@ class EditorJSInspector implements InlineTool {
     const selection = window.getSelection();
 
     if (!selection) {
-      throw new Error();
+      throw new EditorJSInspectorError();
     }
 
     if (!selection.anchorNode?.parentElement) {
