@@ -1,5 +1,3 @@
-Work in progress
-
 <h1 align="center">Welcome to editorjs-inspector 👋</h1>
 <p>
   <a href="https://www.npmjs.com/package/editorjs-inspector" target="_blank">
