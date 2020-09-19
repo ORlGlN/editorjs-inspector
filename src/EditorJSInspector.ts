@@ -49,8 +49,7 @@ class EditorJSInspector implements InlineTool {
 
       const range = new Range();
 
-      range.setStartBefore(node);
-      range.setEndAfter(node);
+      range.selectNodeContents(node);
 
       selection.removeAllRanges();
       selection.addRange(range);
