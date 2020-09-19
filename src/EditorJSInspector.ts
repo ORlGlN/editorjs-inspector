@@ -91,6 +91,7 @@ class EditorJSInspector implements InlineTool {
     `;
 
     this.#dialog = document.createElement('div');
+    this.#dialog.classList.add('editorjs-inspector-dialog');
     this.#dialog.style.position = 'absolute';
     this.#dialog.style.backgroundColor = '#ffffff';
     this.#dialog.style.border = '1px solid #eaeaea';
@@ -98,8 +99,6 @@ class EditorJSInspector implements InlineTool {
     this.#dialog.style.boxShadow = '0 3px 15px -3px rgba(13,20,33,.13)';
     this.#dialog.style.margin = '1rem';
     this.#dialog.style.paddingRight = '1rem';
-    this.#dialog.style.transform = 'translateY(-100%)';
-    this.#dialog.style.zIndex = '1';
 
     this.#enabled = false;
   }
@@ -136,16 +135,19 @@ class EditorJSInspector implements InlineTool {
       root = root?.parentElement;
     }
 
-    if (!root) {
+    const codexEditor = this.#button.closest('.codex-editor');
+
+    if (!codexEditor || !root) {
       return false;
     }
 
-    const rect = root.getBoundingClientRect();
+    const codexEditorRect = codexEditor.getBoundingClientRect();
+    const rootRect = root.getBoundingClientRect();
 
     this.#dialog.innerHTML = '';
     this.#dialog.style.display = 'block';
-    this.#dialog.style.top = `${window.pageYOffset + rect.top - 16}px`;
-    this.#dialog.style.left = `${window.pageXOffset + rect.left}px`;
+    this.#dialog.style.top = `${rootRect.bottom - codexEditorRect.top + 16}px`;
+    this.#dialog.style.left = `${rootRect.left - codexEditorRect.left}px`;
 
     const list = document.createElement('ul');
 
@@ -163,7 +165,17 @@ class EditorJSInspector implements InlineTool {
   }
 
   render() {
-    document.body.appendChild(this.#dialog);
+    setTimeout(() => {
+      const inlineToolbar = this.#button
+        .closest('.codex-editor')
+        ?.querySelector('.ce-inline-toolbar');
+
+      if (!inlineToolbar?.parentNode) {
+        throw new EditorJSInspectorError();
+      }
+
+      inlineToolbar.parentNode.insertBefore(this.#dialog, inlineToolbar);
+    });
 
     return this.#button;
   }
