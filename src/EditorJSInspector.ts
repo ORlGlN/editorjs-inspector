@@ -99,6 +99,7 @@ class EditorJSInspector implements InlineTool {
     this.#dialog.style.border = '1px solid #eaeaea';
     this.#dialog.style.borderRadius = '4px';
     this.#dialog.style.boxShadow = '0 3px 15px -3px rgba(13,20,33,.13)';
+    this.#dialog.style.left = '0';
     this.#dialog.style.margin = '1rem';
     this.#dialog.style.paddingRight = '1rem';
 
@@ -121,9 +122,16 @@ class EditorJSInspector implements InlineTool {
       return false;
     }
 
+    const inlineToolbar = this.#button
+      .closest('.codex-editor')
+      ?.querySelector('div.ce-inline-toolbar') as
+      | HTMLDivElement
+      | null
+      | undefined;
+
     const selection = window.getSelection();
 
-    if (!selection) {
+    if (!inlineToolbar || !selection) {
       throw new EditorJSInspectorError();
     }
 
@@ -136,23 +144,19 @@ class EditorJSInspector implements InlineTool {
         ? selection.anchorNode
         : selection.anchorNode.parentElement;
 
-    while (root && root?.contentEditable !== 'true') {
-      root = root?.parentElement;
+    while (root && root.contentEditable !== 'true') {
+      root = root.parentElement;
     }
 
-    const codexEditor = this.#button.closest('.codex-editor');
-
-    if (!codexEditor || !root) {
+    if (!root) {
       return false;
     }
 
-    const codexEditorRect = codexEditor.getBoundingClientRect();
-    const rootRect = root.getBoundingClientRect();
-
     this.#dialog.innerHTML = '';
     this.#dialog.style.display = 'block';
-    this.#dialog.style.top = `${rootRect.bottom - codexEditorRect.top + 16}px`;
-    this.#dialog.style.left = `${rootRect.left - codexEditorRect.left}px`;
+    this.#dialog.style.top = `${
+      inlineToolbar.offsetTop + inlineToolbar.offsetHeight
+    }px`;
 
     const list = document.createElement('ul');
 
