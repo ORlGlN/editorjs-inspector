@@ -49,7 +49,9 @@ class EditorJSInspector implements InlineTool {
 
       const range = new Range();
 
-      range.selectNodeContents(node);
+      (node instanceof Element ? range.selectNode : range.selectNodeContents)(
+        node
+      );
 
       selection.removeAllRanges();
       selection.addRange(range);
@@ -129,7 +131,10 @@ class EditorJSInspector implements InlineTool {
       return false;
     }
 
-    let root: HTMLElement | null = selection.anchorNode.parentElement;
+    let root: HTMLElement | null =
+      selection.anchorNode instanceof HTMLElement
+        ? selection.anchorNode
+        : selection.anchorNode.parentElement;
 
     while (root && root?.contentEditable !== 'true') {
       root = root?.parentElement;
