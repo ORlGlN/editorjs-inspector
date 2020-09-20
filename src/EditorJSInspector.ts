@@ -15,18 +15,18 @@ class EditorJSInspector implements InlineTool {
   }
 
   static domTree({
-    anchor,
     node,
+    selectedNodes,
   }: {
-    anchor: Node;
     node: Node;
+    selectedNodes: Node[];
   }): HTMLLIElement {
     const listItem = document.createElement('li');
     const span = document.createElement('span');
 
     span.style.cursor = 'pointer';
 
-    if (anchor.isEqualNode(node)) {
+    if (selectedNodes.some((selectedNode) => selectedNode.isEqualNode(node))) {
       span.style.backgroundColor = '#cae6fe';
     }
 
@@ -49,9 +49,7 @@ class EditorJSInspector implements InlineTool {
 
       const range = new Range();
 
-      (node instanceof Element ? range.selectNode : range.selectNodeContents)(
-        node
-      );
+      range.selectNode(node);
 
       selection.removeAllRanges();
       selection.addRange(range);
@@ -65,7 +63,7 @@ class EditorJSInspector implements InlineTool {
 
     list.append(
       ...Array.from(node.childNodes).map((childNode) =>
-        EditorJSInspector.domTree({ anchor, node: childNode })
+        EditorJSInspector.domTree({ node: childNode, selectedNodes })
       )
     );
 
@@ -158,11 +156,17 @@ class EditorJSInspector implements InlineTool {
       inlineToolbar.offsetTop + inlineToolbar.offsetHeight
     }px`;
 
+    const range = selection.getRangeAt(0);
+
+    const selectedNodes = [
+      range.startContainer instanceof Element
+        ? range.startContainer.childNodes[range.startOffset]
+        : range.startContainer,
+    ];
+
     const list = document.createElement('ul');
 
-    list.append(
-      EditorJSInspector.domTree({ anchor: selection.anchorNode, node: root })
-    );
+    list.append(EditorJSInspector.domTree({ node: root, selectedNodes }));
 
     this.#dialog.append(list);
 
